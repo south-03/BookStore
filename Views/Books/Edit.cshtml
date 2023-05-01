@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -34,29 +34,20 @@
                 <span asp-validation-for="Category" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="TotalPage" class="control-label"></label>
                 <input asp-for="TotalPage" class="form-control" />
                 <span asp-validation-for="TotalPage" class="text-danger"></span>
             </div>
+            <img src="@Url.Content("~/resource/image/" + Model.BookCoverUrl)" alt="" width="150px" height="150px"/>
             <div class="form-group">
-                <label asp-for="CoverImagePath" class="control-label"></label>
-                <input asp-for="CoverImagePath" class="form-control" />
-                <span asp-validation-for="CoverImagePath" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CoverImageName" class="control-label"></label>
-                <input asp-for="CoverImageName" class="form-control" />
-                <span asp-validation-for="CoverImageName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedOn" class="control-label"></label>
-                <input asp-for="CreatedOn" class="form-control" />
-                <span asp-validation-for="CreatedOn" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedOn" class="control-label"></label>
-                <input asp-for="UpdatedOn" class="form-control" />
-                <span asp-validation-for="UpdatedOn" class="text-danger"></span>
+                <label asp-for="BookPhoto" class="control-label"></label>
+                <input value="@Model.BookCoverUrl" asp-for="BookPhoto" class="form-control" />
+                <span asp-validation-for="BookPhoto" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

@@ -7,27 +7,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BookStore.Data;
 using BookStore.Models;
-using Microsoft.AspNetCore.Hosting;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Hosting;
 
 namespace BookStore.Controllers
 {
     public class BooksController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IWebHostEnvironment webHostEnvironment;
+        private readonly IWebHostEnvironment webHost;
 
-        public BooksController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+        public BooksController(ApplicationDbContext context, IWebHostEnvironment webHost)
         {
             _context = context;
-            this.webHostEnvironment = webHostEnvironment;
+            this.webHost = webHost;
         }
 
         // GET: Books
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_context.Book.ToList());
-              /*return _context.Book != null ? 
+            return View( _context.Book.ToList());
+               /* _context.Book != null ?
                           View(await _context.Book.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Book'  is null.");*/
         }
@@ -61,33 +61,16 @@ namespace BookStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Book book)
+        public IActionResult Create(Book book)
         {
-            string uniqueFileName = null;
-
-            if (book.CoverImageFile != null)
-            {
-                string ImageUploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "resource/image/");
-                uniqueFileName = Guid.NewGuid().ToString() + "_" + book.CoverImageFile.FileName;
-                string filePath = Path.Combine(ImageUploadFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    book.CoverImageFile.CopyTo(fileStream);
-                }
-
-                book.CoverImagePath = "~/wwwroot/resource/image/";
-                book.CoverImageName = uniqueFileName;
-
+                string uniqueFileName = GetUploadedFileName(book);
+                book.BookCoverUrl = uniqueFileName;
                 _context.Add(book);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
-            }
-                
-            return View(book);
         }
 
-        // GET: Books/Edit/5
+        
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Book == null)
@@ -103,22 +86,62 @@ namespace BookStore.Controllers
             return View(book);
         }
 
-        // POST: Books/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,Description,Category,TotalPage,CoverImagePath,CoverImageName,CreatedOn,UpdatedOn")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,Description,Category,Price,TotalPage,CreatedOn,UpdatedOn,BookCoverUrl")] Book book, IFormFile BookPhoto)
         {
             if (id != book.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (true)
             {
                 try
                 {
+                    // Check if a new cover image file was uploaded
+                    if (BookPhoto != null)
+                    {
+                        // Check if the uploaded file is an image
+                        if (!IsImage(BookPhoto))
+                        {
+                            ModelState.AddModelError(string.Empty, "Please select a valid image file for the cover image.");
+                            return View(book);
+                        }
+
+
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(BookPhoto.FileName);
+
+
+                        string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "resource", "image");
+
+
+                        if (!Directory.Exists(uploadPath))
+                        {
+                            Directory.CreateDirectory(uploadPath);
+                        }
+
+
+                        string filePath = Path.Combine(uploadPath, fileName);
+
+                        if (!string.IsNullOrEmpty(book.BookCoverUrl))
+                        {
+                            string oldFilePath = Path.Combine(uploadPath, book.BookCoverUrl);
+                            if (System.IO.File.Exists(oldFilePath))
+                            {
+                                System.IO.File.Delete(oldFilePath);
+                            }
+                        }
+
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await BookPhoto.CopyToAsync(stream);
+                        }
+
+                        book.BookCoverUrl = fileName;
+                    }
+
                     _context.Update(book);
                     await _context.SaveChangesAsync();
                 }
@@ -133,10 +156,12 @@ namespace BookStore.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(book);
         }
+
+
 
         // GET: Books/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -156,21 +181,27 @@ namespace BookStore.Controllers
             return View(book);
         }
 
-        // POST: Books/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Book == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Book'  is null.");
-            }
             var book = await _context.Book.FindAsync(id);
-            if (book != null)
+            if (book == null)
             {
-                _context.Book.Remove(book);
+                return NotFound();
             }
-            
+
+            if (book.BookCoverUrl != null)
+            {
+                // delete the old image file from the server
+                var imagePath = Path.Combine(webHost.WebRootPath, "resource/images/", book.BookCoverUrl);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
+            _context.Book.Remove(book);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -179,5 +210,35 @@ namespace BookStore.Controllers
         {
           return (_context.Book?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        private string GetUploadedFileName(Book book)
+        {
+            string uniqueFileName = null;
+
+            if (book.BookPhoto != null)
+            {
+                string uploadsFolder = Path.Combine(webHost.WebRootPath, "resource/image");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + book.BookPhoto.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    book.BookPhoto.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
+        }
+
+        private bool IsImage(IFormFile file)
+        {
+            if (file.ContentType.Contains("image"))
+            {
+                return true;
+            }
+
+            string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+            string fileExtension = Path.GetExtension(file.FileName);
+            return permittedExtensions.Contains(fileExtension.ToLower());
+        }
+
     }
 }

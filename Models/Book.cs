@@ -11,13 +11,26 @@ namespace BookStore.Models
         public string Author { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }
+        public string Price { get; set; }
         public int TotalPage { get; set; }
-        public string CoverImagePath { get; set; }
-        public string CoverImageName { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public DateTime? UpdatedOn { get; set; }
+        private DateTime? createdOn;
+        [DataType(DataType.Date)]
+        public DateTime CreatedOn
+        {
+            get { return createdOn ?? DateTime.Now; }
+            set { createdOn = value; }
+        }
+        private DateTime? updatedOn;
+        [DataType(DataType.Date)]
+        public DateTime UpdatedOn
+        {
+            get { return updatedOn ?? DateTime.Now; }
+            set { updatedOn = value; }
+        }
+        public string BookCoverUrl { get; set; }
+
         [NotMapped]
-        [DisplayName("Upload image")]
-        public IFormFile CoverImageFile { get; set; }
+        [Display(Name = "Book Photo")]
+        public IFormFile? BookPhoto { get; set; }
     }
 }
