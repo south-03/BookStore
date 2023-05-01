@@ -25,16 +25,19 @@
                 @Html.DisplayNameFor(model => model.Category)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TotalPage)
+                @Html.DisplayNameFor(model => model.Price)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CoverImageName)
+                @Html.DisplayNameFor(model => model.TotalPage)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedOn)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.UpdatedOn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BookCoverUrl)
             </th>
             <th></th>
         </tr>
@@ -55,16 +58,19 @@
                 @Html.DisplayFor(modelItem => item.Category)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TotalPage)
+                @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                    <img src="@Url.Content("~/resource/image/" + @item.CoverImageName)" height="120px" width="120px"/>
+                @Html.DisplayFor(modelItem => item.TotalPage)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedOn)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.UpdatedOn)
+            </td>
+            <td>
+                 <img src="@Url.Content("~/resource/image/" + item.BookCoverUrl)" alt="" width="150px" height="150px"/>
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
