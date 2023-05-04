@@ -9,9 +9,11 @@ using BookStore.Data;
 using BookStore.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookStore.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class BooksController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -194,7 +196,7 @@ namespace BookStore.Controllers
             if (book.BookCoverUrl != null)
             {
                 // delete the old image file from the server
-                var imagePath = Path.Combine(webHost.WebRootPath, "resource/images/", book.BookCoverUrl);
+                var imagePath = Path.Combine(webHost.WebRootPath, "resource/image/", book.BookCoverUrl);
                 if (System.IO.File.Exists(imagePath))
                 {
                     System.IO.File.Delete(imagePath);
