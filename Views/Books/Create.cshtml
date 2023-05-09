@@ -47,7 +47,7 @@
                 <input type="file" asp-for="BookPhoto" class="form-control" onchange="document.getElementById('Preview').src = window.URL.createObjectURL(this.files[0])" />
                 <span asp-validation-for="BookPhoto" class="text-danger"></span>
             </div>
-            <img id="Preview" src="" alt="" width="150" height="150"/>
+            <img id="Preview" src="" alt="" width="150" height="150" class="mt-2"/>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -56,7 +56,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-success mt-1"><i class="fa-solid fa-list"></i> Back to List</a>
 </div>
 
 @section Scripts {
