@@ -11,6 +11,13 @@ namespace BookStore.Data
         {
         }
         public DbSet<BookStore.Models.Book> Book { get; set; } = default!;
+        public DbSet<Genre> Genres { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public DbSet<CartDetail> CartDetails { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+
+        public DbSet<OrderStatus> orderStatuses { get; set; }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; } = default!;
     }

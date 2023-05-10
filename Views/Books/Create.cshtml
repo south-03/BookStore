@@ -28,10 +28,14 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
+                <label asp-for="Genre" class="control-label"></label>
+                <select class="form-select" id="genreId" name="genreId">
+                    <option selected>Genre</option>
+                    
+                </select>
+                <span asp-validation-for="Genre" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Price" class="control-label"></label>
                 <input asp-for="Price" class="form-control" />
