@@ -25,13 +25,17 @@ namespace BookStore.Controllers
             this.webHost = webHost;
         }
 
+        public async Task<IActionResult> SelectedGenre()
+        {
+            var instructors = await _context.Genres.ToListAsync();
+            return PartialView("~/Views/Genres/Selected.cshtml", instructors);
+        }
+
         // GET: Books
         public async Task<IActionResult> Index()
         {
             return View( _context.Book.ToList());
-               /* _context.Book != null ?
-                          View(await _context.Book.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Book'  is null.");*/
+               
         }
 
         // GET: Books/Details/5
@@ -53,9 +57,17 @@ namespace BookStore.Controllers
         }
 
         // GET: Books/Create
-        public IActionResult Create()
+        public IActionResult Create(string? id)
         {
-            return View();
+            if(id == null)
+            {
+                ViewBag.instructorId = null;
+                return View();
+            } else
+            {
+                ViewBag.instructorId = id;
+                return View();
+            }
         }
 
         // POST: Books/Create
@@ -63,10 +75,13 @@ namespace BookStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Book book)
+        public async Task<IActionResult> Create(Book book, int instructorId)
         {
+                book.Id = 0;
+                var instructor = await _context.Genres.FindAsync(instructorId);
                 string uniqueFileName = GetUploadedFileName(book);
                 book.BookCoverUrl = uniqueFileName;
+                book.Genre = instructor;
                 _context.Add(book);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
@@ -241,6 +256,8 @@ namespace BookStore.Controllers
             string fileExtension = Path.GetExtension(file.FileName);
             return permittedExtensions.Contains(fileExtension.ToLower());
         }
+
+        
 
     }
 }
