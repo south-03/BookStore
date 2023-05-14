@@ -1,3 +1,4 @@
+using AspNetCore.Unobtrusive.Ajax;
 using BookStore.Data;
 using BookStore.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +11,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
+builder.Services.AddUnobtrusiveAjax();
 builder.Services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -34,7 +35,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseUnobtrusiveAjax();
 app.UseRouting();
 
 app.UseAuthorization();

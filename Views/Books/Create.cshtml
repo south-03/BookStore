@@ -28,25 +28,18 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Instructors Id</label>
-                <input name="instructorId" class="form-control" value="@ViewBag.instructorId" />
-                @Html.ActionLink("Seleted Genre", "SelectedGenre", "Books")
-            </div>
-            @*<div class="form-group">
                 <label class="control-label"></label>
-                <input name="instructorId" class="form-control" value="@ViewBag.instructorId" disabled/>
-                @Html.AjaxActionLink("Select Genre", "SelectedGenre", "Books", new AjaxOptions { UpdateTargetId="list_ajax" })
-                <span>|</span>
+                <input name="instructorId" class="form-control" value="@ViewBag.instructorId"/>
+                @Html.AjaxActionLink("", "SelectedGenre", "Books", new AjaxOptions {UpdateTargetId="list_ajax"})
                 <a href="" data-ajax="true"
                             data-ajax-method="get"
                             data-ajax-update="#list_ajax"
                             data-ajax-node="replace"
-                            data-ajax-url="@Url.Action("SelectedGenre", "Genre")">Selected genre</a>
+                            data-ajax-url="@Url.Action("SelectedGenre", "Books")">Selected genre</a>
                 <div id="list_ajax">
 
                 </div>
-            </div>*@
-
+            </div>
             <div class="form-group">
                 <label asp-for="Price" class="control-label"></label>
                 <input asp-for="Price" class="form-control" />

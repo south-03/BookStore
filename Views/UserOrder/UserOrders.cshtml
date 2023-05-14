@@ -3,36 +3,26 @@
 @{
 }
 <div style="width:100%" class="mt-2">
-    <a href="/Identity/Account/Manage" class="btn btn-primary my-2">Back</a>
-
-    <h4>My Orders</h4>
+    <h4>Purchase history</h4>
     @if (Model != null && Model.Count() > 0)
     {
         <table class="table table-striped">
             <tr>
                 <th>OrderDate</th>
-                <th>OrderStatus</th>
+                @*<th>OrderStatus</th>*@
             </tr>
             @foreach (var order in Model)
             {
                 <tr>
                     <td>@order.CreateDate.ToString("dd-MM-yyyy")</td>
-                    <td>@order.OrderStatus.StatusName</td>
+                    @*<td>@order.OrderStatus.StatusName</td>*@
                 </tr>
                 @if (order.OrderDetail != null && order.OrderDetail.Count > 0)
                 {
                     <tr>
                         <td>
-                            <table class="table table-striped">
-                                <tr>
-                                    <td>
-                                        Total:
-                                    </td>
-                                    <td>
-                                        @(order.OrderDetail.Select(item => item.Book.Price * item.Quantity).Sum())
-
-                                    </td>
-                                </tr>
+                            <table class="table">
+                                
                                 <tr>
                                     <th>Book</th>
                                     <th>Image</th>
@@ -49,9 +39,24 @@
                                         </td>
                                         <td>@item.Book.Genre.GenreName</td>
                                         <td>@item.Book.Price X @item.Quantity</td>
-                                        <td> @(item.Book.Price * item.Quantity) </td>
+                                        <td>@(item.Book.Price * item.Quantity)đ</td>
                                     </tr>
                                 }
+                                <tr>
+                                    <td>
+                                        Total:
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        @(order.OrderDetail.Select(item => item.Book.Price * item.Quantity).Sum())đ
+                                    </td>
+                                </tr>
                             </table>
                         </td>
                     </tr>
@@ -62,8 +67,9 @@
     }
     else
     {
-        <h5>No orders</h5>
+        <h5>You didn't buy anything <i class="fa-solid fa-face-sad-cry"></i></h5>
     }
+    <a href="/Identity/Account/Manage" class="btn btn-primary my-2">Back</a>
 </div>
 
 
