@@ -79,13 +79,13 @@ namespace BookStore.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Book book, int instructorId)
+        public async Task<IActionResult> Create(Book book)
         {
                 book.Id = 0;
-                var instructor = await _context.Genres.FindAsync(instructorId);
+                /*var instructor = await _context.Genres.FindAsync(instructorId);*/
                 string uniqueFileName = GetUploadedFileName(book);
                 book.BookCoverUrl = uniqueFileName;
-                book.Genre = instructor;
+                /*book.Genre = instructor;*/
                 _context.Add(book);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
