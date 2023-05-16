@@ -12,6 +12,7 @@ namespace BookStore.Models
         public string Description { get; set; }
         public double Price { get; set; }
         public int TotalPage { get; set; }
+        [DefaultValue("noImage.jpg")]
         public string BookCoverUrl { get; set; }
 
         [NotMapped]

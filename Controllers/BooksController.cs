@@ -31,6 +31,13 @@ namespace BookStore.Controllers
             return PartialView("~/Views/Genres/Selected.cshtml", instructors);
         }
 
+        public async Task<IActionResult> SelectedEditGenre()
+        {
+            var instructors = await _context.Genres.ToListAsync();
+            return PartialView("~/Views/Genres/SelectedEdit.cshtml", instructors);
+
+        }
+
         // GET: Books
         public async Task<IActionResult> Index()
         {
@@ -70,9 +77,6 @@ namespace BookStore.Controllers
             }
         }
 
-        // POST: Books/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Book book, int instructorId)
@@ -92,20 +96,23 @@ namespace BookStore.Controllers
         {
             if (id == null || _context.Book == null)
             {
+                ViewBag.instructorId = null;
                 return NotFound();
             }
 
             var book = await _context.Book.FindAsync(id);
             if (book == null)
             {
+                ViewBag.instructorId = null;
                 return NotFound();
             }
+            ViewBag.instructorId = id;
             return View(book);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,Description,Category,Price,TotalPage,CreatedOn,UpdatedOn,BookCoverUrl")] Book book, IFormFile BookPhoto)
+        public async Task<IActionResult> Edit(int id, Book book, int instructorId)
         {
             if (id != book.Id)
             {
@@ -116,49 +123,10 @@ namespace BookStore.Controllers
             {
                 try
                 {
-                    // Check if a new cover image file was uploaded
-                    if (BookPhoto != null)
-                    {
-                        // Check if the uploaded file is an image
-                        if (!IsImage(BookPhoto))
-                        {
-                            ModelState.AddModelError(string.Empty, "Please select a valid image file for the cover image.");
-                            return View(book);
-                        }
-
-
-                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(BookPhoto.FileName);
-
-
-                        string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "resource", "image");
-
-
-                        if (!Directory.Exists(uploadPath))
-                        {
-                            Directory.CreateDirectory(uploadPath);
-                        }
-
-
-                        string filePath = Path.Combine(uploadPath, fileName);
-
-                        if (!string.IsNullOrEmpty(book.BookCoverUrl))
-                        {
-                            string oldFilePath = Path.Combine(uploadPath, book.BookCoverUrl);
-                            if (System.IO.File.Exists(oldFilePath))
-                            {
-                                System.IO.File.Delete(oldFilePath);
-                            }
-                        }
-
-
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await BookPhoto.CopyToAsync(stream);
-                        }
-
-                        book.BookCoverUrl = fileName;
-                    }
-
+                    string uniqueFileName = GetUploadedFileName(book);
+                    var instructor = await _context.Genres.FindAsync(instructorId);
+                    book.BookCoverUrl = uniqueFileName;
+                    book.Genre = instructor;
                     _context.Update(book);
                     await _context.SaveChangesAsync();
                 }

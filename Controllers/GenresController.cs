@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BookStore.Data;
 using BookStore.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace BookStore.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class GenresController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -63,7 +66,6 @@ namespace BookStore.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
             
-            return View(genre);
         }
 
         // GET: Genres/Edit/5
@@ -87,14 +89,14 @@ namespace BookStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,GenreName")] Genre genre)
+        public async Task<IActionResult> Edit(int id, Genre genre)
         {
             if (id != genre.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (true)
             {
                 try
                 {

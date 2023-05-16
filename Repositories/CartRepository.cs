@@ -63,8 +63,6 @@ namespace BookStore.Repositories
             var cartItemCount = await GetCartItemCount(userId);
             return cartItemCount;
         }
-
-
         public async Task<int> RemoveItem(int bookId)
         {
             string userId = GetUserId();
@@ -92,7 +90,6 @@ namespace BookStore.Repositories
             var cartItemCount = await GetCartItemCount(userId);
             return cartItemCount;
         }
-
         public async Task<ShoppingCart> GetUserCart()
         {
             var userId = GetUserId();
@@ -111,7 +108,6 @@ namespace BookStore.Repositories
             var cart = await _db.ShoppingCarts.FirstOrDefaultAsync(x => x.UserId == userId);
             return cart;
         }
-
         public async Task<int> GetCartItemCount(string userId = "")
         {
             if (!string.IsNullOrEmpty(userId))
@@ -125,7 +121,6 @@ namespace BookStore.Repositories
                         ).ToListAsync();
             return data.Count;
         }
-
         public async Task<bool> DoCheckout()
         {
             using var transaction = _db.Database.BeginTransaction();
@@ -173,7 +168,6 @@ namespace BookStore.Repositories
                 return false;
             }
         }
-
         private string GetUserId()
         {
             var principal = _httpContextAccessor.HttpContext.User;
