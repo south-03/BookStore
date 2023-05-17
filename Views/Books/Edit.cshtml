@@ -50,7 +50,8 @@
                 <input asp-for="TotalPage" class="form-control" />
                 <span asp-validation-for="TotalPage" class="text-danger"></span>
             </div>
-            <img src="@Url.Content("~/resource/image/" + Model.BookCoverUrl)" alt="" width="150px" height="150px"/>
+            <img src="@Url.Content("~/resource/image/" + Model.BookCoverUrl)" alt="" width="150" height="150"/>
+
             <div class="form-group">
                 <label asp-for="BookPhoto" class="control-label"></label>
                 <input value="@Model.BookCoverUrl" asp-for="BookPhoto" class="form-control" />
